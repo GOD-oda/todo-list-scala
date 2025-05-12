@@ -39,6 +39,14 @@ class TodoRoutes(todoService: TodoService) {
       }.handleErrorWith { error =>
         BadRequest(ApiError(error.getMessage).asJson)
       }
+
+    case req @ PUT -> Root / "todos" / id =>
+      req.as[TodoRequest].flatMap { todoRequest =>
+        val todo = todoService.updateTodo(id = id, title = todoRequest.title)
+        Ok(todo.asJson)
+      }.handleErrorWith { error =>
+        BadRequest(ApiError(error.getMessage).asJson)
+      }
   }
 }
 
