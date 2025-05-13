@@ -47,6 +47,16 @@ class TodoRoutes(todoService: TodoService) {
       }.handleErrorWith { error =>
         BadRequest(ApiError(error.getMessage).asJson)
       }
+
+    case req @ DELETE -> Root / "todos" / id =>
+      todoService.getTodoById(id = id) match {
+        case None => BadRequest(ApiError(s"Todo with id $id not found").asJson)
+        case Some(_) =>
+          todoService.deleteTodo(id = id) match {
+            case true => NoContent()
+            case false => InternalServerError(ApiError(s"Failed to delete the Todo with id $id").asJson)
+          }
+      }
   }
 }
 
