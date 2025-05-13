@@ -42,10 +42,10 @@ class TodoRoutes(todoService: TodoService) {
 
     case req @ PUT -> Root / "todos" / id =>
       req.as[TodoRequest].flatMap { todoRequest =>
-        val todo = todoService.updateTodo(id = id, title = todoRequest.title)
-        Ok(todo.asJson)
-      }.handleErrorWith { error =>
-        BadRequest(ApiError(error.getMessage).asJson)
+        todoService.updateTodo(id = id, title = todoRequest.title) match {
+          case Some(todo) => Ok(todo.asJson)
+          case None => NotFound(ApiError(s"Todo with id $id not found").asJson)
+        }
       }
 
     case req @ DELETE -> Root / "todos" / id =>
